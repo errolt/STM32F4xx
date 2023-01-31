@@ -123,6 +123,8 @@
   #include "blackpill_map.h"
 #elif defined(BOARD_BTT_SKR_PRO_1_1)
   #include "btt_skr_pro_v1_1_map.h"
+#elif defined(BOARD_MKS_ROBIN_NANO_3_1)
+  #include "mks_robin_nano_v3_1_map.h"
 #elif defined(BOARD_BTT_SKR_20)
   #include "btt_skr_2.0_map.h"
 #elif defined(BOARD_BTT_SKR_20_DAC)
