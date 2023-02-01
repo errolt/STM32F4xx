@@ -37,9 +37,6 @@
 #define I2C_PORT 1
 #define I2C1_ALT_PINMAP // GPIOB, SCL_PIN = 6, SDA_PIN = 7
 
-#undef EEPROM_ENABLE
-#define EEPROM_ENABLE 3
-
 #if TRINAMIC_ENABLE
 #define HAS_BOARD_INIT
 #endif
@@ -148,7 +145,6 @@
 #define PROBE_PORT                  GPIOA
 #define PROBE_PIN                   8                           // BLTouch PA8
 
-#define SDCARD_ENABLE 1
 #if SDCARD_ENABLE
 #define SD_CS_PORT                  GPIOC
 #define SD_CS_PIN                   9
@@ -181,7 +177,7 @@
 
 #if TRINAMIC_SPI_ENABLE
 
-// SPI1 is used: GPIOC pin 0, 1 and 14
+// GPIO is used: GPIOC pin 0, 1 and 14
 
 #define MOTOR_CSX_PORT              GPIOD
 #define MOTOR_CSX_PIN               5
@@ -203,7 +199,10 @@
 #endif
 
 //Wifi interface
-#define MPG_ENABLE                  1
+#if MPG_ENABLE
+
 #define MPG_MODE_PORT               GPIOE
 #define MPG_MODE_PIN                9                   //WIFI_CTRL
 #define MPG_STREAM          1
+
+#endif

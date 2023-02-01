@@ -179,7 +179,7 @@
     #define SPINDLE_PWM_TIMER_CH    1
     #define SPINDLE_PWM_TIMER_INV   0
     #define SPINDLE_PWM_TIMER_AF    1
-  #if SPINDLE_PWM_PIN == 5 // PA5 - TIM2_CH1
+  #elif SPINDLE_PWM_PIN == 5 // PA5 - TIM2_CH1
     #define SPINDLE_PWM_TIMER_N     2
     #define SPINDLE_PWM_TIMER_CH    1
     #define SPINDLE_PWM_TIMER_INV   0

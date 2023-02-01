@@ -41,6 +41,8 @@ MEMORY
   FLASH    (rx)    : ORIGIN = 0x800C000,   LENGTH = 1024K - 48K
 }
 
+_FLASH_VectorTable = ORIGIN(FLASH);
+
 /* Sections */
 SECTIONS
 {
