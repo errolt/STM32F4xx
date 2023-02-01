@@ -17,9 +17,7 @@
   along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// IMPORTANT: Control inputs are mapped differently when build is configured for more than 3 axes!
-
-#if N_ABC_MOTORS > 3 || N_AUTO_SQUARED > 1
+#if N_ABC_MOTORS > 2 || N_AUTO_SQUARED > 1
 #error "Axis configuration is not supported!"
 #endif
 
@@ -33,11 +31,15 @@
 
 
 #if USB_SERIAL_CDC == 0
-//#define SERIAL_MOD 3
+#define SERIAL_MOD 3
 #endif
 
 #define I2C_PORT 1
 #define I2C1_ALT_PINMAP // GPIOB, SCL_PIN = 6, SDA_PIN = 7
+
+#undef EEPROM_ENABLE
+#define EEPROM_ENABLE 3
+
 #if TRINAMIC_ENABLE
 #define HAS_BOARD_INIT
 #endif
@@ -118,14 +120,14 @@
 #define SPINDLE_DIRECTION_PIN       1                           // FAN2
 
 // Define spindle PWM output pin.
-#define SPINDLE_PWM_PORT_BASE       GPIOB_BASE
-#define SPINDLE_PWM_PIN             0                           // HEAT1 - PB0
+#define SPINDLE_PWM_PORT_BASE       GPIOA_BASE
+#define SPINDLE_PWM_PIN             0                           // H-BED - PA0
 
 // Define flood and mist coolant enable output pins.
 #define COOLANT_FLOOD_PORT          GPIOE
 #define COOLANT_FLOOD_PIN           5                           // HEAT0
-#define COOLANT_MIST_PORT           GPIOA
-#define COOLANT_MIST_PIN            0                           // H-BED
+#define COOLANT_MIST_PORT           GPIOB
+#define COOLANT_MIST_PIN            0                           // HEAT1
 
 // Define user-control controls (cycle start, reset, feed hold) input pins.
 
@@ -199,3 +201,9 @@
 #endif
 
 #endif
+
+//Wifi interface
+#define MPG_ENABLE                  1
+#define MPG_MODE_PORT               GPIOE
+#define MPG_MODE_PIN                9                   //WIFI_CTRL
+#define MPG_STREAM          1

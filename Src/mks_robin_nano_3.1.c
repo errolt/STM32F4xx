@@ -30,21 +30,6 @@
 
 #include "trinamic/common.h"
 
-static SPI_HandleTypeDef spi_port = {
-    .Instance = SPI1,
-    .Init.Mode = SPI_MODE_MASTER,
-    .Init.Direction = SPI_DIRECTION_2LINES,
-    .Init.DataSize = SPI_DATASIZE_8BIT,
-    .Init.CLKPolarity = SPI_POLARITY_LOW,
-    .Init.CLKPhase = SPI_PHASE_1EDGE,
-    .Init.NSS = SPI_NSS_SOFT,
-    .Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32,
-    .Init.FirstBit = SPI_FIRSTBIT_MSB,
-    .Init.TIMode = SPI_TIMODE_DISABLE,
-    .Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE,
-    .Init.CRCPolynomial = 10
-};
-
 static struct {
     GPIO_TypeDef *port;
     uint16_t pin;
@@ -61,16 +46,19 @@ inline static void delay (void)
 
 static uint8_t spi_get_byte (void)
 {
+    /*
     spi_port.Instance->DR = 0xFF; // Writing dummy data into Data register
 
     while(!__HAL_SPI_GET_FLAG(&spi_port, SPI_FLAG_RXNE));
 
     return (uint8_t)spi_port.Instance->DR;
+    */
+    return spi_put_byte(0xff);
 }
 
 static uint8_t spi_put_byte (uint8_t byte)
 {
-    spi_port.Instance->DR = byte;
+/*    spi_port.Instance->DR = byte;
 
     while(!__HAL_SPI_GET_FLAG(&spi_port, SPI_FLAG_TXE));
     while(!__HAL_SPI_GET_FLAG(&spi_port, SPI_FLAG_RXNE));
@@ -78,6 +66,18 @@ static uint8_t spi_put_byte (uint8_t byte)
     __HAL_SPI_CLEAR_OVRFLAG(&spi_port);
 
     return (uint8_t)spi_port.Instance->DR;
+    */
+    uint8_t out=byte;
+    uint8_t in=0;
+    for(i=0;i<8;i++)
+    {
+        DIGITAL_OUT(sck.port,sck.pin,0);
+        DIGITAL_OUT(sdo.port,sdo.pin,byte>>8);
+        in=in<<1 + DIGITAL_IN(sdi.port,sdi.pin);
+        DIGITAL_OUT(sck.port,sck.pin,1);
+        byte=byte<<1;
+    }
+    return in;
 }
 
 TMC_spi_status_t tmc_spi_read (trinamic_motor_t driver, TMC_spi_datagram_t *datagram)
@@ -176,17 +176,6 @@ static void if_init (uint8_t motors, axes_signals_t enabled)
 
     if (!init_ok) {
 
-        __HAL_RCC_SPI3_CLK_ENABLE();
-
-        GPIO_InitTypeDef GPIO_InitStruct = {
-            .Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_14,
-            .Mode = GPIO_MODE_AF_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-            .Alternate = GPIO_AF6_SPI1
-        };
-        HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
         static const periph_pin_t sck = {
             .function = Output_SCK,
             .group = PinGroup_SPI,
@@ -194,14 +183,16 @@ static void if_init (uint8_t motors, axes_signals_t enabled)
             .pin = 0,
             .mode = { .mask = PINMODE_OUTPUT }
         };
+        HAL_GPIO_Init(GPIOC, &sck);
 
         static const periph_pin_t sdo = {
             .function = Output_MOSI,
             .group = PinGroup_SPI,
             .port = GPIOD,
             .pin = 14,
-            .mode = { .mask = PINMODE_NONE }
+            .mode = { .mask = PINMODE_OUTPUT }
         };
+        HAL_GPIO_Init(GPIOC, &sdo);
 
         static const periph_pin_t sdi = {
             .function = Input_MISO,
@@ -210,9 +201,8 @@ static void if_init (uint8_t motors, axes_signals_t enabled)
             .pin = 1,
             .mode = { .mask = PINMODE_NONE }
         };
+        HAL_GPIO_Init(GPIOC, &sdi);
 
-        HAL_SPI_Init(&spi_port);
-        __HAL_SPI_ENABLE(&spi_port);
 
         hal.periph_port.register_pin(&sck);
         hal.periph_port.register_pin(&sdo);

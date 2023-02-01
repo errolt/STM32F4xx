@@ -38,13 +38,8 @@ _Min_Stack_Size = 0x1000 ;	/* required amount of stack */
 MEMORY
 {
   RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 128K
-  FLASH    (rx)    : ORIGIN = 0x800C000,   LENGTH = 1024K - 48K - 128K
-  EEPROM_EMUL(xrw)      : ORIGIN = 0x80E0000,   LENGTH = 128K
+  FLASH    (rx)    : ORIGIN = 0x800C000,   LENGTH = 1024K - 48K
 }
-
-_FLASH_VectorTable = ORIGIN(FLASH);
-_EEPROM_Emul_Start = ORIGIN(EEPROM_EMUL);
-_EEPROM_Emul_Sector = 11;
 
 /* Sections */
 SECTIONS
